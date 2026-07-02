@@ -3,86 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ДенискаКуликов — быстровозводимые здания под ключ</title>
-    <!-- Подключение шрифта (опционально, но ускорит загрузку) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <title>ДенискаКуликов — строительство быстровозводимых зданий</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
     <style>
-        /* ----------------------------------------
-           ГЛОБАЛЬНЫЕ СБРОСЫ И БАЗА
-        ---------------------------------------- */
+        /* ============================================================
+           ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И СБРОС
+           ============================================================ */
+        :root {
+            --bg-primary: #0a0e14;
+            --bg-secondary: #111820;
+            --bg-card: #18222e;
+            --text-primary: #ffffff;
+            --text-secondary: #b8c9dd;
+            --text-muted: #6f85a0;
+            --accent: #d4a373;
+            --accent-gradient: linear-gradient(135deg, #d4a373, #b8863d);
+            --accent-hover: #e8b88a;
+            --border-color: #26323f;
+            --shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8);
+            --radius: 16px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-dark: #0b1219;
-            --bg-card: #141f2b;
-            --text-light: #f0f4fa;
-            --text-muted: #b0c4d9;
-            --accent: #e88a1e;
-            --accent-hover: #f09b2e;
-            --border-color: #2a3a4a;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            --shadow: 0 20px 40px -12px rgba(0,0,0,0.6);
-        }
-
         html {
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
             font-family: var(--font);
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         a {
             color: var(--accent);
             text-decoration: none;
+            transition: color 0.3s;
         }
         a:hover {
             color: var(--accent-hover);
         }
 
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* ----------------------------------------
+        /* ============================================================
+           ПРЕЛОАДЕР
+           ============================================================ */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s, visibility 0.6s;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
            ШАПКА (НАВИГАЦИЯ)
-        ---------------------------------------- */
+           ============================================================ */
         header {
-            background: rgba(11, 18, 25, 0.92);
-            backdrop-filter: blur(8px);
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s;
+            background: rgba(10, 14, 20, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(38, 50, 63, 0.4);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        header.scrolled {
+            background: rgba(10, 14, 20, 0.96);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
         .header-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            height: 72px;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
             letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .logo span {
             color: var(--accent);
+        }
+        .logo-icon {
+            font-size: 30px;
+            line-height: 1;
         }
 
         .nav-list {
@@ -93,9 +145,9 @@
             font-size: 15px;
         }
         .nav-list a {
-            color: var(--text-muted);
-            transition: color 0.2s;
+            color: var(--text-secondary);
             position: relative;
+            transition: color 0.3s;
         }
         .nav-list a::after {
             content: '';
@@ -104,7 +156,7 @@
             bottom: -4px;
             width: 0;
             height: 2px;
-            background: var(--accent);
+            background: var(--accent-gradient);
             transition: width 0.3s;
         }
         .nav-list a:hover {
@@ -113,27 +165,33 @@
         .nav-list a:hover::after {
             width: 100%;
         }
+        .nav-list .active-link::after {
+            width: 100%;
+        }
 
         .nav-phone {
             font-weight: 700;
             font-size: 16px;
-            color: #fff;
-            background: var(--accent);
-            padding: 8px 20px;
+            background: var(--accent-gradient);
+            color: var(--bg-primary);
+            padding: 10px 24px;
             border-radius: 40px;
-            transition: background 0.2s;
+            transition: transform 0.2s, box-shadow 0.3s;
+            display: inline-block;
         }
         .nav-phone:hover {
-            background: var(--accent-hover);
-            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 163, 115, 0.35);
+            color: var(--bg-primary);
         }
 
-        /* Мобильное меню (бургер) */
+        /* Бургер */
         .burger {
             display: none;
             flex-direction: column;
-            cursor: pointer;
             gap: 5px;
+            cursor: pointer;
+            padding: 4px;
         }
         .burger span {
             width: 28px;
@@ -152,18 +210,20 @@
             transform: rotate(-45deg) translate(5px, -6px);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .nav-list {
-                position: absolute;
-                top: 70px;
+                position: fixed;
+                top: 72px;
                 left: 0;
                 width: 100%;
-                background: var(--bg-dark);
+                background: var(--bg-primary);
                 flex-direction: column;
                 padding: 30px 24px;
                 gap: 20px;
                 display: none;
                 border-bottom: 1px solid var(--border-color);
+                backdrop-filter: blur(12px);
+                background: rgba(10, 14, 20, 0.98);
             }
             .nav-list.open {
                 display: flex;
@@ -174,23 +234,24 @@
             .nav-phone {
                 display: none;
             }
-            .header-inner .nav-phone-mobile {
-                display: block;
+            .nav-phone-mobile {
+                display: inline-block;
                 margin-top: 10px;
+                text-align: center;
             }
         }
         .nav-phone-mobile {
             display: none;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .nav-phone-mobile {
-                display: inline-block;
+                display: block;
             }
         }
 
-        /* ----------------------------------------
+        /* ============================================================
            HERO
-        ---------------------------------------- */
+           ============================================================ */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -198,9 +259,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 100px 20px 80px;
+            padding: 120px 20px 80px;
             overflow: hidden;
-            background: var(--bg-dark);
+            background: var(--bg-primary);
         }
 
         .hero-video-bg {
@@ -210,74 +271,88 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.25;
+            opacity: 0.2;
             z-index: 0;
             pointer-events: none;
         }
 
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(10,14,20,0.3) 0%, rgba(10,14,20,0.8) 100%);
+            z-index: 1;
+        }
+
         .hero-content {
             position: relative;
-            z-index: 1;
-            max-width: 820px;
+            z-index: 2;
+            max-width: 860px;
         }
 
         .hero-badge {
             display: inline-block;
-            background: rgba(232, 138, 30, 0.15);
-            border: 1px solid rgba(232, 138, 30, 0.3);
+            background: rgba(212, 163, 115, 0.12);
+            border: 1px solid rgba(212, 163, 115, 0.25);
             color: var(--accent);
-            padding: 6px 20px;
+            padding: 6px 22px;
             border-radius: 40px;
             font-weight: 600;
             font-size: 14px;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(4px);
         }
 
         .hero h1 {
-            font-size: 54px;
-            font-weight: 800;
-            line-height: 1.15;
+            font-size: 60px;
+            font-weight: 900;
+            line-height: 1.1;
             margin-bottom: 20px;
-            letter-spacing: -1px;
+            letter-spacing: -1.5px;
         }
         .hero h1 span {
-            color: var(--accent);
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
             font-size: 20px;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 36px;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 40px;
+            font-weight: 400;
         }
 
         .hero-cta {
             display: flex;
-            gap: 16px;
+            gap: 18px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .btn {
             display: inline-block;
-            padding: 16px 40px;
+            padding: 18px 44px;
             border-radius: 60px;
             font-weight: 700;
             font-size: 16px;
             transition: all 0.25s;
             border: none;
             cursor: pointer;
+            text-align: center;
         }
         .btn-primary {
-            background: var(--accent);
-            color: #0b1219;
+            background: var(--accent-gradient);
+            color: #0a0e14;
+            box-shadow: 0 12px 28px -8px rgba(212, 163, 115, 0.3);
         }
         .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-3px);
-            box-shadow: 0 16px 28px -8px rgba(232, 138, 30, 0.35);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 36px -8px rgba(212, 163, 115, 0.45);
+            color: #0a0e14;
         }
         .btn-outline {
             background: transparent;
@@ -287,123 +362,206 @@
         .btn-outline:hover {
             border-color: var(--accent);
             color: var(--accent);
-            transform: translateY(-3px);
+            transform: translateY(-4px);
         }
 
-        @media (max-width: 640px) {
+        .hero-scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            color: var(--text-muted);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: bounce 2s infinite;
+        }
+        .hero-scroll-indicator .mouse {
+            width: 24px;
+            height: 38px;
+            border: 2px solid var(--text-muted);
+            border-radius: 12px;
+            position: relative;
+        }
+        .hero-scroll-indicator .mouse::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 4px;
+            animation: scrollDot 2s infinite;
+        }
+        @keyframes scrollDot {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(16px); }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-6px); }
+        }
+
+        @media (max-width: 768px) {
             .hero h1 {
-                font-size: 34px;
+                font-size: 38px;
             }
             .hero p {
                 font-size: 17px;
             }
+            .hero-scroll-indicator {
+                display: none;
+            }
         }
 
-        /* ----------------------------------------
-           СЧЕТЧИКИ (ДОСТИЖЕНИЯ)
-        ---------------------------------------- */
+        /* ============================================================
+           СЕКЦИЯ СТАТИСТИКИ
+           ============================================================ */
         .stats {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             padding: 60px 0;
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 30px;
             text-align: center;
         }
         .stat-item .number {
-            font-size: 48px;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: -1px;
+            font-size: 52px;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
         }
         .stat-item .label {
             font-size: 16px;
-            color: var(--text-muted);
-            margin-top: 6px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
         }
 
-        /* ----------------------------------------
-           УСЛУГИ
-        ---------------------------------------- */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+            .stat-item .number {
+                font-size: 38px;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* ============================================================
+           УСЛУГИ (с 3D-наклоном)
+           ============================================================ */
         .section {
-            padding: 80px 0;
+            padding: 100px 0;
         }
         .section-title {
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 42px;
+            font-weight: 800;
             text-align: center;
             margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+        .section-title span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .section-subtitle {
             text-align: center;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 18px;
-            max-width: 700px;
-            margin: 0 auto 50px;
+            max-width: 680px;
+            margin: 0 auto 56px;
         }
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
         .service-card {
             background: var(--bg-card);
-            padding: 32px 24px;
-            border-radius: 20px;
+            padding: 36px 28px;
+            border-radius: var(--radius);
             border: 1px solid var(--border-color);
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             text-align: center;
+            cursor: default;
+            transform-style: preserve-3d;
+            perspective: 800px;
+            position: relative;
         }
         .service-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
             border-color: var(--accent);
             box-shadow: var(--shadow);
         }
         .service-card .icon {
-            font-size: 44px;
-            margin-bottom: 16px;
+            font-size: 48px;
+            margin-bottom: 18px;
             display: block;
         }
         .service-card h3 {
             font-size: 22px;
+            font-weight: 700;
             margin-bottom: 8px;
         }
         .service-card p {
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 15px;
+            line-height: 1.5;
         }
 
-        /* ----------------------------------------
-           ПОРТФОЛИО с фильтрацией
-        ---------------------------------------- */
+        /* ============================================================
+           ПОРТФОЛИО (с фильтрацией и лайтбоксом)
+           ============================================================ */
+        .portfolio-section {
+            background: var(--bg-secondary);
+        }
+
         .filter-buttons {
             display: flex;
             justify-content: center;
             gap: 12px;
             flex-wrap: wrap;
-            margin-bottom: 40px;
+            margin-bottom: 44px;
         }
         .filter-btn {
             background: transparent;
             border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 24px;
+            color: var(--text-secondary);
+            padding: 8px 28px;
             border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.25s;
             font-size: 14px;
+            font-family: var(--font);
         }
         .filter-btn.active,
         .filter-btn:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #0b1219;
+            background: var(--accent-gradient);
+            border-color: transparent;
+            color: #0a0e14;
         }
 
         .portfolio-grid {
@@ -413,38 +571,107 @@
         }
         .portfolio-item {
             background: var(--bg-card);
-            border-radius: 16px;
+            border-radius: var(--radius);
             overflow: hidden;
             border: 1px solid var(--border-color);
             transition: 0.3s;
             cursor: pointer;
+            position: relative;
         }
         .portfolio-item:hover {
-            transform: scale(1.02);
+            transform: scale(1.03);
             border-color: var(--accent);
+            box-shadow: var(--shadow);
         }
-        .portfolio-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-            background: #2a3a4a;
+        .portfolio-item .thumb {
+            height: 220px;
+            background: #1f2d3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        .portfolio-item .thumb .placeholder-icon {
+            font-size: 48px;
+            opacity: 0.3;
         }
         .portfolio-item .info {
             padding: 18px 20px;
         }
         .portfolio-item .info h4 {
             font-size: 18px;
+            font-weight: 700;
         }
         .portfolio-item .info p {
             font-size: 14px;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             margin-top: 4px;
         }
 
-        /* ----------------------------------------
-           ПРЕИМУЩЕСТВА (ИКОНКИ)
-        ---------------------------------------- */
+        /* Лайтбокс (упрощённый) */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            backdrop-filter: blur(8px);
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox-content {
+            max-width: 800px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 30px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        .lightbox-content .close-lb {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            background: none;
+            border: none;
+        }
+        .lightbox-content .close-lb:hover {
+            color: #fff;
+        }
+        .lightbox-content .lb-image {
+            width: 100%;
+            height: 300px;
+            background: #1f2d3b;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+        .lightbox-content .lb-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+        .lightbox-content .lb-desc {
+            color: var(--text-secondary);
+        }
+
+        /* ============================================================
+           ПРЕИМУЩЕСТВА
+           ============================================================ */
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -452,81 +679,156 @@
             text-align: center;
         }
         .benefit-item .icon {
-            font-size: 40px;
+            font-size: 44px;
             margin-bottom: 12px;
         }
         .benefit-item h4 {
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: 700;
             margin-bottom: 4px;
         }
         .benefit-item p {
-            color: var(--text-muted);
+            color: var(--text-secondary);
             font-size: 14px;
         }
 
-        /* ----------------------------------------
-           КАЛЬКУЛЯТОР (ИНТЕГРАЦИЯ)
-        ---------------------------------------- */
+        /* ============================================================
+           КАЛЬКУЛЯТОР
+           ============================================================ */
         .calc-section {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
         }
         .calc-wrapper {
             max-width: 820px;
             margin: 0 auto;
-            padding: 10px 0 20px;
         }
-        /* Переопределяем стили калькулятора под тёмную тему */
-        .calc-wrapper .calculator-card {
-            background: var(--bg-dark);
+        .calculator-card {
+            background: var(--bg-primary);
             border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 36px 40px;
             box-shadow: var(--shadow);
-            border-radius: 24px;
-            padding: 32px 36px;
         }
-        .calc-wrapper .calculator-card .calc-header h1 {
+        .calculator-card .calc-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .calculator-card .calc-header p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+        .form-group select,
+        .form-group input {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
             color: #fff;
+            font-size: 16px;
+            transition: 0.2s;
+            font-family: var(--font);
         }
-        .calc-wrapper .calculator-card .calc-header p {
-            color: var(--text-muted);
-        }
-        .calc-wrapper .calculator-card .form-group label {
-            color: var(--text-light);
-        }
-        .calc-wrapper .calculator-card .form-group select,
-        .calc-wrapper .calculator-card .form-group input {
-            background: #1a2a36;
-            border-color: var(--border-color);
-            color: #fff;
-        }
-        .calc-wrapper .calculator-card .form-group select:focus,
-        .calc-wrapper .calculator-card .form-group input:focus {
-            background: #1f3140;
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.2);
         }
-        .calc-wrapper .calculator-card .price-block .price {
+        .result-area {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .price-block .label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .price-block .price {
+            font-size: 40px;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .price-block .price small {
+            font-size: 20px;
+            font-weight: 600;
+            -webkit-text-fill-color: var(--text-secondary);
+            color: var(--text-secondary);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             color: #fff;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: 0.2s;
+            cursor: pointer;
         }
-        .calc-wrapper .calculator-card .btn-secondary {
-            background: #2a3a4a;
-            color: #fff;
-        }
-        .calc-wrapper .calculator-card .btn-secondary:hover {
-            background: #3a4a5a;
-        }
-        .calc-wrapper .calculator-card .result-area {
-            border-top-color: var(--border-color);
+        .btn-secondary:hover {
+            background: var(--border-color);
         }
 
-        /* ----------------------------------------
-           ОТЗЫВЫ (КАРУСЕЛЬ)
-        ---------------------------------------- */
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .calculator-card {
+                padding: 24px 18px;
+            }
+            .price-block .price {
+                font-size: 30px;
+            }
+            .result-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* ============================================================
+           ОТЗЫВЫ (карусель)
+           ============================================================ */
         .reviews-slider {
             display: flex;
             gap: 30px;
             overflow-x: auto;
-            padding: 10px 4px 20px;
+            padding: 10px 4px 30px;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
@@ -535,52 +837,69 @@
         }
         .reviews-slider::-webkit-scrollbar-track {
             background: var(--bg-card);
+            border-radius: 10px;
         }
         .reviews-slider::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 10px;
         }
         .review-card {
-            min-width: 280px;
+            min-width: 300px;
             flex: 0 0 auto;
             background: var(--bg-card);
             padding: 28px;
-            border-radius: 20px;
+            border-radius: var(--radius);
             border: 1px solid var(--border-color);
             scroll-snap-align: start;
+            transition: 0.3s;
+        }
+        .review-card:hover {
+            border-color: var(--accent);
+        }
+        .review-card .stars {
+            color: var(--accent);
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .review-card blockquote {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-size: 16px;
         }
         .review-card .author {
             font-weight: 700;
-            margin-top: 12px;
         }
         .review-card .position {
             font-size: 14px;
             color: var(--text-muted);
         }
-        .review-card .stars {
-            color: var(--accent);
-            letter-spacing: 2px;
-        }
 
-        /* ----------------------------------------
+        /* ============================================================
            КОНТАКТЫ
-        ---------------------------------------- */
+           ============================================================ */
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 50px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         .contact-info p {
-            margin-bottom: 12px;
-            font-size: 17px;
+            margin-bottom: 16px;
+            font-size: 18px;
         }
         .contact-info .label {
             color: var(--text-muted);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            display: block;
+        }
+        .contact-info .value {
+            font-size: 20px;
+            font-weight: 600;
         }
         .contact-form input,
         .contact-form textarea {
@@ -592,12 +911,14 @@
             color: #fff;
             font-size: 16px;
             margin-bottom: 16px;
-            transition: border 0.2s;
+            transition: 0.2s;
+            font-family: var(--font);
         }
         .contact-form input:focus,
         .contact-form textarea:focus {
             outline: none;
             border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.2);
         }
         .contact-form button {
             width: 100%;
@@ -610,12 +931,12 @@
             }
         }
 
-        /* ----------------------------------------
+        /* ============================================================
            ФУТЕР
-        ---------------------------------------- */
+           ============================================================ */
         footer {
             border-top: 1px solid var(--border-color);
-            padding: 40px 0 24px;
+            padding: 48px 0 28px;
             text-align: center;
             color: var(--text-muted);
             font-size: 14px;
@@ -623,487 +944,597 @@
         .footer-socials {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 16px;
+            gap: 24px;
+            margin-bottom: 20px;
         }
         .footer-socials a {
-            font-size: 24px;
-            color: var(--text-muted);
+            font-size: 28px;
+            color: var(--text-secondary);
             transition: 0.2s;
         }
         .footer-socials a:hover {
             color: var(--accent);
+            transform: translateY(-4px);
+        }
+        .footer-logo {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .footer-logo span {
+            color: var(--accent);
         }
 
-        /* ----------------------------------------
-           ВСПОМОГАТЕЛЬНЫЕ КЛАССЫ
-        ---------------------------------------- */
-        .text-center { text-align: center; }
-        .mt-20 { margin-top: 20px; }
-        .mb-40 { margin-bottom: 40px; }
+        /* ============================================================
+           АНИМАЦИИ ПОЯВЛЕНИЯ
+           ============================================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        /* Адаптив для мелких */
+        /* ============================================================
+           АДАПТИВНЫЕ ПРАВКИ
+           ============================================================ */
         @media (max-width: 480px) {
-            .container { padding: 0 16px; }
-            .section { padding: 50px 0; }
-            .section-title { font-size: 28px; }
-            .calc-wrapper .calculator-card { padding: 20px; }
+            .container {
+                padding: 0 16px;
+            }
+            .section {
+                padding: 60px 0;
+            }
+            .section-title {
+                font-size: 30px;
+            }
+            .hero h1 {
+                font-size: 30px;
+            }
+            .btn {
+                padding: 14px 28px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- ШАПКА -->
-<header>
-    <div class="container header-inner">
-        <div class="logo">Дениска<span>Куликов</span></div>
-        <ul class="nav-list" id="navList">
-            <li><a href="#services">Услуги</a></li>
-            <li><a href="#portfolio">Портфолио</a></li>
-            <li><a href="#calculator">Калькулятор</a></li>
-            <li><a href="#reviews">Отзывы</a></li>
-            <li><a href="#contacts">Контакты</a></li>
-            <li><a href="tel:+78005553535" class="nav-phone-mobile">+7 (800) 555-35-35</a></li>
-        </ul>
-        <a href="tel:+78005553535" class="nav-phone">+7 (800) 555-35-35</a>
-        <div class="burger" id="burger" aria-label="Меню">
-            <span></span><span></span><span></span>
-        </div>
+    <!-- ===== ПРЕЛОАДЕР ===== -->
+    <div id="preloader">
+        <div class="loader-spinner"></div>
     </div>
-</header>
 
-<!-- HERO -->
-<section class="hero">
-    <!-- Видео-фон (заглушка) — можно заменить на свой файл или убрать -->
-    <video class="hero-video-bg" autoplay muted loop playsinline poster="">
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-    </video>
-    <div class="hero-content">
-        <div class="hero-badge">⭐ 10 лет на рынке</div>
-        <h1>Быстровозводимые здания <span>под ключ</span></h1>
-        <p>Проектируем, изготавливаем и монтируем ангары, цеха, склады и торговые центры по всей России. Собственное производство.</p>
-        <div class="hero-cta">
-            <a href="#calculator" class="btn btn-primary">Рассчитать стоимость</a>
-            <a href="#portfolio" class="btn btn-outline">Наши работы</a>
-        </div>
-    </div>
-</section>
-
-<!-- СТАТИСТИКА -->
-<section class="stats">
-    <div class="container stats-grid">
-        <div class="stat-item">
-            <div class="number" data-count="1200">0</div>
-            <div class="label">Построено объектов</div>
-        </div>
-        <div class="stat-item">
-            <div class="number" data-count="45000">0</div>
-            <div class="label">Тонн металла</div>
-        </div>
-        <div class="stat-item">
-            <div class="number" data-count="350">0</div>
-            <div class="label">Сотрудников</div>
-        </div>
-        <div class="stat-item">
-            <div class="number" data-count="98">0</div>
-            <div class="label">% довольных клиентов</div>
-        </div>
-    </div>
-</section>
-
-<!-- УСЛУГИ -->
-<section class="section" id="services">
-    <div class="container">
-        <h2 class="section-title">Наши услуги</h2>
-        <p class="section-subtitle">Полный цикл работ — от проектирования до ввода в эксплуатацию</p>
-        <div class="services-grid">
-            <div class="service-card">
-                <span class="icon">📐</span>
-                <h3>Проектирование</h3>
-                <p>Разрабатываем КМ, КМД, 3D-модели с учётом всех нагрузок и норм.</p>
+    <!-- ===== ШАПКА ===== -->
+    <header id="header">
+        <div class="container header-inner">
+            <div class="logo">
+                <span class="logo-icon">🏗️</span>
+                Дениска<span>Куликов</span>
             </div>
-            <div class="service-card">
-                <span class="icon">🏗️</span>
-                <h3>Изготовление</h3>
-                <p>Собственный цех с ЧПУ-оборудованием, контроль качества на каждом этапе.</p>
-            </div>
-            <div class="service-card">
-                <span class="icon">🚚</span>
-                <h3>Доставка и монтаж</h3>
-                <p>Оперативная логистика, монтажные бригады с опытом более 7 лет.</p>
-            </div>
-            <div class="service-card">
-                <span class="icon">🔧</span>
-                <h3>Под ключ</h3>
-                <p>Полная готовность объекта — фундамент, инженерные сети, отделка.</p>
+            <ul class="nav-list" id="navList">
+                <li><a href="#services" class="active-link">Услуги</a></li>
+                <li><a href="#portfolio">Портфолио</a></li>
+                <li><a href="#calculator">Калькулятор</a></li>
+                <li><a href="#reviews">Отзывы</a></li>
+                <li><a href="#contacts">Контакты</a></li>
+                <li><a href="tel:+78005553535" class="nav-phone-mobile">+7 (800) 555-35-35</a></li>
+            </ul>
+            <a href="tel:+78005553535" class="nav-phone">+7 (800) 555-35-35</a>
+            <div class="burger" id="burger" aria-label="Меню">
+                <span></span><span></span><span></span>
             </div>
         </div>
-    </div>
-</section>
+    </header>
 
-<!-- ПОРТФОЛИО -->
-<section class="section" id="portfolio" style="background: var(--bg-card);">
-    <div class="container">
-        <h2 class="section-title">Реализованные проекты</h2>
-        <p class="section-subtitle">Более 1200 объектов по всей стране</p>
-
-        <div class="filter-buttons">
-            <button class="filter-btn active" data-filter="all">Все</button>
-            <button class="filter-btn" data-filter="hangar">Ангары</button>
-            <button class="filter-btn" data-filter="workshop">Цеха</button>
-            <button class="filter-btn" data-filter="commercial">Торговые центры</button>
-        </div>
-
-        <div class="portfolio-grid" id="portfolioGrid">
-            <!-- элементы будут вставлены JS -->
-        </div>
-    </div>
-</section>
-
-<!-- ПРЕИМУЩЕСТВА -->
-<section class="section">
-    <div class="container">
-        <h2 class="section-title">Почему выбирают нас</h2>
-        <p class="section-subtitle">Наши принципы работы, которые обеспечивают результат</p>
-        <div class="benefits-grid">
-            <div class="benefit-item">
-                <div class="icon">⚡</div>
-                <h4>Скорость</h4>
-                <p>Строим в 2 раза быстрее традиционных методов</p>
-            </div>
-            <div class="benefit-item">
-                <div class="icon">💰</div>
-                <h4>Прозрачная цена</h4>
-                <p>Фиксированная смета без скрытых доплат</p>
-            </div>
-            <div class="benefit-item">
-                <div class="icon">🏅</div>
-                <h4>Гарантия 10 лет</h4>
-                <p>На все конструкции и монтажные работы</p>
-            </div>
-            <div class="benefit-item">
-                <div class="icon">🤝</div>
-                <h4>Индивидуальный подход</h4>
-                <p>Адаптируем решения под ваши задачи</p>
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="home">
+        <video class="hero-video-bg" autoplay muted loop playsinline poster="">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">🔨 Строим с 2016 года</div>
+            <h1>Быстровозводимые здания <span>под ключ</span></h1>
+            <p>Проектируем, изготавливаем и монтируем ангары, цеха, склады и торговые центры по всей России. Собственное производство и гарантия качества.</p>
+            <div class="hero-cta">
+                <a href="#calculator" class="btn btn-primary">Рассчитать стоимость</a>
+                <a href="#portfolio" class="btn btn-outline">Наши работы</a>
             </div>
         </div>
-    </div>
-</section>
+        <div class="hero-scroll-indicator">
+            <span>Листайте</span>
+            <div class="mouse"></div>
+        </div>
+    </section>
 
-<!-- КАЛЬКУЛЯТОР -->
-<section class="section calc-section" id="calculator">
-    <div class="container">
-        <h2 class="section-title">Онлайн-калькулятор</h2>
-        <p class="section-subtitle">Получите предварительную стоимость вашего объекта за 1 минуту</p>
-        <div class="calc-wrapper">
-            <!-- Вставка готового калькулятора (код из предыдущего ответа) -->
-            <div class="calculator-card">
-                <div class="calc-header">
-                    <h1>Калькулятор <span>быстровозводимого</span> здания</h1>
-                    <p>Рассчитайте ориентировочную стоимость вашего объекта за 1 минуту</p>
+    <!-- ===== СТАТИСТИКА ===== -->
+    <section class="stats">
+        <div class="container stats-grid">
+            <div class="stat-item">
+                <div class="number" data-count="1200">0</div>
+                <div class="label">Построено объектов</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" data-count="45000">0</div>
+                <div class="label">Тонн металла</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" data-count="350">0</div>
+                <div class="label">Сотрудников</div>
+            </div>
+            <div class="stat-item">
+                <div class="number" data-count="98">0</div>
+                <div class="label">% довольных клиентов</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== УСЛУГИ ===== -->
+    <section class="section" id="services">
+        <div class="container">
+            <h2 class="section-title">Наши <span>услуги</span></h2>
+            <p class="section-subtitle">Полный цикл работ — от проектирования до ввода в эксплуатацию</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <span class="icon">📐</span>
+                    <h3>Проектирование</h3>
+                    <p>Разрабатываем КМ, КМД, 3D-модели с учётом всех нагрузок и норм.</p>
                 </div>
-                <form id="calcForm" class="form-grid">
-                    <div class="form-group">
-                        <label for="buildingType">Тип здания <span class="required">*</span></label>
-                        <select id="buildingType" required>
-                            <option value="hangar">Ангар / Склад</option>
-                            <option value="workshop">Производственный цех</option>
-                            <option value="commercial">Торговое / Административное</option>
-                            <option value="agricultural">Сельскохозяйственный</option>
-                        </select>
+                <div class="service-card">
+                    <span class="icon">🏗️</span>
+                    <h3>Изготовление</h3>
+                    <p>Собственный цех с ЧПУ-оборудованием, контроль качества на каждом этапе.</p>
+                </div>
+                <div class="service-card">
+                    <span class="icon">🚚</span>
+                    <h3>Доставка и монтаж</h3>
+                    <p>Оперативная логистика, монтажные бригады с опытом более 7 лет.</p>
+                </div>
+                <div class="service-card">
+                    <span class="icon">🔧</span>
+                    <h3>Под ключ</h3>
+                    <p>Полная готовность объекта — фундамент, инженерные сети, отделка.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ПОРТФОЛИО ===== -->
+    <section class="section portfolio-section" id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Наши <span>проекты</span></h2>
+            <p class="section-subtitle">Более 1200 объектов по всей стране — вот лишь некоторые из них</p>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="hangar">Ангары</button>
+                <button class="filter-btn" data-filter="workshop">Цеха</button>
+                <button class="filter-btn" data-filter="commercial">Торговые центры</button>
+            </div>
+
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- элементы будут вставлены JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ПРЕИМУЩЕСТВА ===== -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Почему <span>выбирают нас</span></h2>
+            <p class="section-subtitle">Наши принципы работы, которые обеспечивают результат</p>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="icon">⚡</div>
+                    <h4>Скорость</h4>
+                    <p>Строим в 2 раза быстрее традиционных методов</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="icon">💰</div>
+                    <h4>Прозрачная цена</h4>
+                    <p>Фиксированная смета без скрытых доплат</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="icon">🏅</div>
+                    <h4>Гарантия 10 лет</h4>
+                    <p>На все конструкции и монтажные работы</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="icon">🤝</div>
+                    <h4>Индивидуальный подход</h4>
+                    <p>Адаптируем решения под ваши задачи</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== КАЛЬКУЛЯТОР ===== -->
+    <section class="section calc-section" id="calculator">
+        <div class="container">
+            <h2 class="section-title">Онлайн-<span>калькулятор</span></h2>
+            <p class="section-subtitle">Получите предварительную стоимость вашего объекта за 1 минуту</p>
+            <div class="calc-wrapper">
+                <div class="calculator-card">
+                    <div class="calc-header">
+                        <h2>Рассчитайте стоимость</h2>
+                        <p>Заполните параметры здания — и мы покажем ориентировочную цену</p>
                     </div>
-                    <div class="form-group">
-                        <label for="region">Регион доставки <span class="required">*</span></label>
-                        <select id="region" required>
-                            <option value="central">Центральный (Москва, МО)</option>
-                            <option value="northwest">Северо-Запад (СПб, ЛО)</option>
-                            <option value="south">Южный (Краснодар, Ростов)</option>
-                            <option value="ural">Урал / Сибирь</option>
-                            <option value="far">Дальний Восток</option>
-                        </select>
+                    <form id="calcForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="buildingType">Тип здания *</label>
+                            <select id="buildingType" required>
+                                <option value="hangar">Ангар / Склад</option>
+                                <option value="workshop">Производственный цех</option>
+                                <option value="commercial">Торговое / Административное</option>
+                                <option value="agricultural">Сельскохозяйственный</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="region">Регион доставки *</label>
+                            <select id="region" required>
+                                <option value="central">Центральный (Москва, МО)</option>
+                                <option value="northwest">Северо-Запад (СПб, ЛО)</option>
+                                <option value="south">Южный (Краснодар, Ростов)</option>
+                                <option value="ural">Урал / Сибирь</option>
+                                <option value="far">Дальний Восток</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="width">Ширина, м *</label>
+                            <input type="number" id="width" value="12" min="6" max="100" step="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="length">Длина, м *</label>
+                            <input type="number" id="length" value="24" min="6" max="150" step="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="height">Высота, м *</label>
+                            <input type="number" id="height" value="6" min="3" max="18" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="options">Дополнительные опции</label>
+                            <select id="options">
+                                <option value="standard">Стандарт (без утепления)</option>
+                                <option value="insulated">С утеплением (сэндвич-панели)</option>
+                                <option value="full">Полная комплектация (ворота, окна)</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Рассчитать стоимость</button>
+                        </div>
+                    </form>
+                    <div id="resultArea" class="result-area">
+                        <div class="price-block">
+                            <span class="label">Ориентировочная стоимость</span>
+                            <span class="price" id="totalPrice">0 <small>₽</small></span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-secondary" id="resetBtn">Сбросить</button>
+                            <button class="btn btn-primary" id="requestBtn">Отправить заявку</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="width">Ширина, м <span class="required">*</span></label>
-                        <input type="number" id="width" value="12" min="6" max="100" step="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="length">Длина, м <span class="required">*</span></label>
-                        <input type="number" id="length" value="24" min="6" max="150" step="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="height">Высота, м <span class="required">*</span></label>
-                        <input type="number" id="height" value="6" min="3" max="18" step="0.5" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="options">Дополнительные опции</label>
-                        <select id="options">
-                            <option value="standard">Стандарт (без утепления)</option>
-                            <option value="insulated">С утеплением (сэндвич-панели)</option>
-                            <option value="full">Полная комплектация (ворота, окна)</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width" style="margin-top: 10px;">
-                        <button type="submit" class="btn btn-primary" style="width:100%; padding:18px;">Рассчитать стоимость</button>
-                    </div>
+                    <p style="font-size:13px; color:var(--text-muted); margin-top:20px; text-align:center;">
+                        * Расчет предварительный. Точная стоимость — после консультации с инженером.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ОТЗЫВЫ ===== -->
+    <section class="section" id="reviews">
+        <div class="container">
+            <h2 class="section-title">Отзывы <span>клиентов</span></h2>
+            <p class="section-subtitle">Реальные люди, реальные проекты</p>
+            <div class="reviews-slider">
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <blockquote>«Построили ангар 18×60 за 35 дней. Качество отличное, все сроки соблюдены. Рекомендую!»</blockquote>
+                    <div class="author">Алексей Иванов</div>
+                    <div class="position">Генеральный директор ООО «Логистик»</div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <blockquote>«Заказывали производственный цех под ключ. Всё сделали профессионально, даже помогли с проектом.»</blockquote>
+                    <div class="author">Мария Смирнова</div>
+                    <div class="position">Руководитель производства ООО «ТехноСтрой»</div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <blockquote>«Очень довольны сотрудничеством. Быстро, качественно, без лишних согласований. Будем обращаться еще.»</blockquote>
+                    <div class="author">Дмитрий Козлов</div>
+                    <div class="position">Директор ООО «АгроИнвест»</div>
+                </div>
+                <div class="review-card">
+                    <div class="stars">★★★★★</div>
+                    <blockquote>«Строили торговый комплекс. Всё сделали в срок, объект сдали точно по графику. Спасибо команде!»</blockquote>
+                    <div class="author">Екатерина Романова</div>
+                    <div class="position">Управляющий ТЦ «Весна»</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== КОНТАКТЫ ===== -->
+    <section class="section" id="contacts" style="background: var(--bg-secondary);">
+        <div class="container">
+            <h2 class="section-title">Свяжитесь <span>с нами</span></h2>
+            <p class="section-subtitle">Оставьте заявку или позвоните — мы обсудим ваш проект</p>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <p>
+                        <span class="label">Телефон</span>
+                        <span class="value"><a href="tel:+78005553535">+7 (800) 555-35-35</a></span>
+                    </p>
+                    <p>
+                        <span class="label">Email</span>
+                        <span class="value"><a href="mailto:info@deniskakulikov.ru">info@deniskakulikov.ru</a></span>
+                    </p>
+                    <p>
+                        <span class="label">Адрес</span>
+                        <span class="value">г. Москва, ул. Производственная, д. 12, офис 305</span>
+                    </p>
+                    <p>
+                        <span class="label">Режим работы</span>
+                        <span class="value">Пн–Пт с 9:00 до 19:00</span>
+                    </p>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" placeholder="Ваше имя" required>
+                    <input type="tel" placeholder="Номер телефона" required>
+                    <input type="email" placeholder="Email (необязательно)">
+                    <textarea rows="4" placeholder="Опишите задачу" required></textarea>
+                    <button type="submit" class="btn btn-primary">Отправить заявку</button>
                 </form>
-                <div id="resultArea" class="result-area">
-                    <div class="price-block">
-                        <span class="label">Ориентировочная стоимость</span>
-                        <span class="price" id="totalPrice">0 <small>₽</small></span>
-                    </div>
-                    <div class="action-buttons">
-                        <button class="btn btn-secondary" id="resetBtn">Сбросить</button>
-                        <button class="btn btn-primary" id="requestBtn">Отправить заявку</button>
-                    </div>
-                </div>
-                <p style="font-size: 13px; color: #94a3b8; text-align:center; margin-top:24px;">
-                    * Расчет является предварительным. Точная стоимость рассчитывается после консультации с инженером.
-                </p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ОТЗЫВЫ -->
-<section class="section" id="reviews">
-    <div class="container">
-        <h2 class="section-title">Отзывы клиентов</h2>
-        <p class="section-subtitle">Реальные люди, реальные проекты</p>
-        <div class="reviews-slider">
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>«Построили ангар 18×60 за 35 дней. Качество отличное, все сроки соблюдены. Рекомендую!»</p>
-                <div class="author">Алексей Иванов</div>
-                <div class="position">Генеральный директор ООО «Логистик»</div>
+    <!-- ===== ФУТЕР ===== -->
+    <footer>
+        <div class="container">
+            <div class="footer-socials">
+                <a href="#" aria-label="YouTube">▶️</a>
+                <a href="#" aria-label="Telegram">✈️</a>
+                <a href="#" aria-label="WhatsApp">💬</a>
+                <a href="#" aria-label="VK">📱</a>
             </div>
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>«Заказывали производственный цех под ключ. Всё сделали профессионально, даже помогли с проектом.»</p>
-                <div class="author">Мария Смирнова</div>
-                <div class="position">Руководитель производства ООО «ТехноСтрой»</div>
-            </div>
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>«Очень довольны сотрудничеством. Быстро, качественно, без лишних согласований. Будем обращаться еще.»</p>
-                <div class="author">Дмитрий Козлов</div>
-                <div class="position">Директор ООО «АгроИнвест»</div>
-            </div>
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>«Строили торговый комплекс. Всё сделали в срок, объект сдали точно по графику. Спасибо команде!»</p>
-                <div class="author">Екатерина Романова</div>
-                <div class="position">Управляющий ТЦ «Весна»</div>
-            </div>
+            <div class="footer-logo">Дениска<span>Куликов</span></div>
+            <p>© 2026 Все права защищены.</p>
+            <p style="margin-top:6px; font-size:13px;">Политика конфиденциальности | Условия использования</p>
+        </div>
+    </footer>
+
+    <!-- ===== ЛАЙТБОКС (для портфолио) ===== -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="close-lb" id="closeLb">&times;</button>
+            <div class="lb-image" id="lbImage">📸 Фото проекта</div>
+            <div class="lb-title" id="lbTitle">Название проекта</div>
+            <div class="lb-desc" id="lbDesc">Описание проекта</div>
         </div>
     </div>
-</section>
 
-<!-- КОНТАКТЫ -->
-<section class="section" id="contacts" style="background: var(--bg-card);">
-    <div class="container">
-        <h2 class="section-title">Свяжитесь с нами</h2>
-        <p class="section-subtitle">Оставьте заявку или позвоните — мы обсудим ваш проект</p>
-        <div class="contact-grid">
-            <div class="contact-info">
-                <p><span class="label">Телефон</span><br><a href="tel:+78005553535" style="font-size:24px; font-weight:700;">+7 (800) 555-35-35</a></p>
-                <p><span class="label">Email</span><br><a href="mailto:info@deniskakulikov.ru">info@deniskakulikov.ru</a></p>
-                <p><span class="label">Адрес</span><br>г. Москва, ул. Производственная, д. 12, офис 305</p>
-                <p><span class="label">Режим работы</span><br>Пн–Пт с 9:00 до 19:00</p>
-            </div>
-            <form class="contact-form" id="contactForm">
-                <input type="text" placeholder="Ваше имя" required>
-                <input type="tel" placeholder="Номер телефона" required>
-                <input type="email" placeholder="Email (необязательно)">
-                <textarea rows="4" placeholder="Опишите задачу" required></textarea>
-                <button type="submit" class="btn btn-primary">Отправить заявку</button>
-            </form>
-        </div>
-    </div>
-</section>
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        (function() {
+            "use strict";
 
-<!-- ФУТЕР -->
-<footer>
-    <div class="container">
-        <div class="footer-socials">
-            <a href="#" aria-label="YouTube">▶️</a>
-            <a href="#" aria-label="Telegram">✈️</a>
-            <a href="#" aria-label="WhatsApp">💬</a>
-            <a href="#" aria-label="VK">📱</a>
-        </div>
-        <p>© 2026 ДенискаКуликов. Все права защищены.</p>
-        <p style="margin-top:6px; font-size:13px;">Политика конфиденциальности | Условия использования</p>
-    </div>
-</footer>
-
-<!-- JAVASCRIPT -->
-<script>
-    (function() {
-        "use strict";
-
-        // ---------- БУРГЕР МЕНЮ ----------
-        const burger = document.getElementById('burger');
-        const navList = document.getElementById('navList');
-        burger.addEventListener('click', () => {
-            burger.classList.toggle('active');
-            navList.classList.toggle('open');
-        });
-        // Закрыть при клике на ссылку
-        navList.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                burger.classList.remove('active');
-                navList.classList.remove('open');
+            // ---------- ПРЕЛОАДЕР ----------
+            window.addEventListener('load', () => {
+                document.getElementById('preloader').classList.add('hidden');
             });
-        });
 
-        // ---------- АНИМАЦИЯ СЧЁТЧИКОВ ----------
-        const counters = document.querySelectorAll('.stat-item .number');
-        const options = { threshold: 0.4 };
-        let animated = false;
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !animated) {
-                    animated = true;
-                    counters.forEach(counter => {
-                        const target = parseInt(counter.getAttribute('data-count'));
-                        let current = 0;
-                        const increment = Math.ceil(target / 60); // шаг за 1.5 сек
-                        const timer = setInterval(() => {
-                            current += increment;
-                            if (current >= target) {
-                                counter.textContent = target + (target > 10 ? '+' : '');
-                                clearInterval(timer);
-                            } else {
-                                counter.textContent = current;
-                            }
-                        }, 25);
-                    });
+            // ---------- ШАПКА (скролл, бургер) ----------
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
                 }
             });
-        }, options);
-        if (counters.length) observer.observe(counters[0]);
 
-        // ---------- ПОРТФОЛИО (ДАННЫЕ) ----------
-        const projects = [
-            { id: 1, type: 'hangar', title: 'Ангар 24×60 м', desc: 'Г. Новосибирск, 2025', img: '' },
-            { id: 2, type: 'workshop', title: 'Производственный цех', desc: 'Г. Екатеринбург, 2024', img: '' },
-            { id: 3, type: 'commercial', title: 'Торговый центр "Гранд"', desc: 'Г. Краснодар, 2025', img: '' },
-            { id: 4, type: 'hangar', title: 'Ангар для сельхозтехники', desc: 'Г. Ростов-на-Дону, 2023', img: '' },
-            { id: 5, type: 'workshop', title: 'Сборочный цех', desc: 'Г. Москва, 2024', img: '' },
-            { id: 6, type: 'commercial', title: 'Торгово-выставочный павильон', desc: 'Г. Казань, 2025', img: '' },
-        ];
-
-        const grid = document.getElementById('portfolioGrid');
-
-        function renderProjects(filter = 'all') {
-            const filtered = filter === 'all' ? projects : projects.filter(p => p.type === filter);
-            grid.innerHTML = filtered.map(p => `
-                <div class="portfolio-item">
-                    <div style="height:200px; background: #2a3a4a; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:14px;">
-                        ${p.img ? `<img src="${p.img}" alt="${p.title}">` : '📸 Фото проекта'}
-                    </div>
-                    <div class="info">
-                        <h4>${p.title}</h4>
-                        <p>${p.desc}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-        renderProjects('all');
-
-        // Фильтрация
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderProjects(btn.dataset.filter);
+            const burger = document.getElementById('burger');
+            const navList = document.getElementById('navList');
+            burger.addEventListener('click', () => {
+                burger.classList.toggle('active');
+                navList.classList.toggle('open');
             });
-        });
+            navList.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    burger.classList.remove('active');
+                    navList.classList.remove('open');
+                });
+            });
 
-        // ---------- КАЛЬКУЛЯТОР (встроенный) ----------
-        // Переиспользуем код из предыдущего решения, но адаптируем под наш контекст
-        const form = document.getElementById('calcForm');
-        const buildingType = document.getElementById('buildingType');
-        const region = document.getElementById('region');
-        const width = document.getElementById('width');
-        const length = document.getElementById('length');
-        const height = document.getElementById('height');
-        const options = document.getElementById('options');
-        const totalPriceEl = document.getElementById('totalPrice');
-        const resetBtn = document.getElementById('resetBtn');
-        const requestBtn = document.getElementById('requestBtn');
+            // ---------- АНИМАЦИЯ СЧЁТЧИКОВ ----------
+            const counters = document.querySelectorAll('.stat-item .number');
+            let countersAnimated = false;
+            const observerCounters = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !countersAnimated) {
+                        countersAnimated = true;
+                        counters.forEach(counter => {
+                            const target = parseInt(counter.getAttribute('data-count'));
+                            let current = 0;
+                            const increment = Math.ceil(target / 70);
+                            const timer = setInterval(() => {
+                                current += increment;
+                                if (current >= target) {
+                                    counter.textContent = target + (target > 10 ? '+' : '');
+                                    clearInterval(timer);
+                                } else {
+                                    counter.textContent = current;
+                                }
+                            }, 20);
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+            if (counters.length) observerCounters.observe(counters[0]);
 
-        function calculatePrice() {
-            const baseRates = { hangar: 8500, workshop: 11000, commercial: 12500, agricultural: 9500 };
-            const regionFactors = { central: 1.0, northwest: 1.12, south: 1.05, ural: 1.18, far: 1.35 };
-            const optionFactors = { standard: 1.0, insulated: 1.25, full: 1.45 };
+            // ---------- ПОРТФОЛИО ----------
+            const projects = [
+                { id: 1, type: 'hangar', title: 'Ангар 24×60 м', desc: 'Новосибирск, 2025', img: '' },
+                { id: 2, type: 'workshop', title: 'Производственный цех', desc: 'Екатеринбург, 2024', img: '' },
+                { id: 3, type: 'commercial', title: 'Торговый центр "Гранд"', desc: 'Краснодар, 2025', img: '' },
+                { id: 4, type: 'hangar', title: 'Ангар для сельхозтехники', desc: 'Ростов-на-Дону, 2023', img: '' },
+                { id: 5, type: 'workshop', title: 'Сборочный цех', desc: 'Москва, 2024', img: '' },
+                { id: 6, type: 'commercial', title: 'Торгово-выставочный павильон', desc: 'Казань, 2025', img: '' },
+            ];
 
-            const type = buildingType.value;
-            const regionVal = region.value;
-            const w = parseFloat(width.value) || 0;
-            const l = parseFloat(length.value) || 0;
-            const h = parseFloat(height.value) || 0;
-            const opt = options.value;
+            const grid = document.getElementById('portfolioGrid');
 
-            if (w < 1 || l < 1 || h < 1) return 0;
-            const volume = w * l * h;
-            let price = volume * (baseRates[type] || 8500) * (regionFactors[regionVal] || 1.0) * (optionFactors[opt] || 1.0);
-            return Math.round(price / 1000) * 1000;
-        }
-
-        function updatePrice() {
-            const price = calculatePrice();
-            totalPriceEl.innerHTML = `${price.toLocaleString('ru-RU')} <small>₽</small>`;
-        }
-
-        form.addEventListener('submit', e => { e.preventDefault(); updatePrice(); });
-        resetBtn.addEventListener('click', () => {
-            buildingType.value = 'hangar';
-            region.value = 'central';
-            width.value = '12';
-            length.value = '24';
-            height.value = '6';
-            options.value = 'standard';
-            updatePrice();
-        });
-        requestBtn.addEventListener('click', () => {
-            const price = calculatePrice();
-            if (price > 0) {
-                alert(`✅ Спасибо за интерес!\n\nВаша заявка отправлена.\nСтоимость: ${price.toLocaleString('ru-RU')} ₽.\nВ ближайшее время с вами свяжется инженер.`);
-            } else {
-                alert('⚠️ Пожалуйста, заполните все размеры для расчета.');
+            function renderProjects(filter = 'all') {
+                const filtered = filter === 'all' ? projects : projects.filter(p => p.type === filter);
+                grid.innerHTML = filtered.map((p, index) => `
+                    <div class="portfolio-item" data-id="${p.id}" data-title="${p.title}" data-desc="${p.desc}">
+                        <div class="thumb">
+                            <span class="placeholder-icon">🏗️</span>
+                            <span style="position:absolute; bottom:10px; right:14px; font-size:12px; color:var(--text-muted);">Фото загрузите позже</span>
+                        </div>
+                        <div class="info">
+                            <h4>${p.title}</h4>
+                            <p>${p.desc}</p>
+                        </div>
+                    </div>
+                `).join('');
             }
-        });
-        // Автопересчет
-        [buildingType, region, width, length, height, options].forEach(inp => {
-            inp.addEventListener('change', updatePrice);
-            if (inp.tagName === 'INPUT') inp.addEventListener('input', updatePrice);
-        });
-        updatePrice();
+            renderProjects('all');
 
-        // ---------- ФОРМА КОНТАКТОВ ----------
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('✅ Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
-            this.reset();
-        });
+            // Фильтрация
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProjects(btn.dataset.filter);
+                });
+            });
 
-        // ---------- ПЛАВНЫЙ СКРОЛЛ (полифилл для старых браузеров) ----------
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                if (href === '#') return;
-                const target = document.querySelector(href);
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Лайтбокс
+            const lightbox = document.getElementById('lightbox');
+            const lbTitle = document.getElementById('lbTitle');
+            const lbDesc = document.getElementById('lbDesc');
+            const lbImage = document.getElementById('lbImage');
+            const closeLb = document.getElementById('closeLb');
+
+            grid.addEventListener('click', (e) => {
+                const item = e.target.closest('.portfolio-item');
+                if (item) {
+                    const title = item.dataset.title;
+                    const desc = item.dataset.desc;
+                    lbTitle.textContent = title;
+                    lbDesc.textContent = desc;
+                    lbImage.innerHTML = '📸 Здесь будет фото проекта';
+                    lightbox.classList.add('active');
                 }
             });
-        });
 
-    })();
-</script>
+            closeLb.addEventListener('click', () => lightbox.classList.remove('active'));
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) lightbox.classList.remove('active');
+            });
 
+            // ---------- КАЛЬКУЛЯТОР ----------
+            const form = document.getElementById('calcForm');
+            const buildingType = document.getElementById('buildingType');
+            const region = document.getElementById('region');
+            const width = document.getElementById('width');
+            const length = document.getElementById('length');
+            const height = document.getElementById('height');
+            const options = document.getElementById('options');
+            const totalPriceEl = document.getElementById('totalPrice');
+            const resetBtn = document.getElementById('resetBtn');
+            const requestBtn = document.getElementById('requestBtn');
+
+            function calculatePrice() {
+                const baseRates = { hangar: 8500, workshop: 11000, commercial: 12500, agricultural: 9500 };
+                const regionFactors = { central: 1.0, northwest: 1.12, south: 1.05, ural: 1.18, far: 1.35 };
+                const optionFactors = { standard: 1.0, insulated: 1.25, full: 1.45 };
+
+                const type = buildingType.value;
+                const regionVal = region.value;
+                const w = parseFloat(width.value) || 0;
+                const l = parseFloat(length.value) || 0;
+                const h = parseFloat(height.value) || 0;
+                const opt = options.value;
+
+                if (w < 1 || l < 1 || h < 1) return 0;
+                const volume = w * l * h;
+                let price = volume * (baseRates[type] || 8500) * (regionFactors[regionVal] || 1.0) * (optionFactors[opt] || 1.0);
+                return Math.round(price / 1000) * 1000;
+            }
+
+            function updatePrice() {
+                const price = calculatePrice();
+                totalPriceEl.innerHTML = `${price.toLocaleString('ru-RU')} <small>₽</small>`;
+            }
+
+            form.addEventListener('submit', e => { e.preventDefault(); updatePrice(); });
+            resetBtn.addEventListener('click', () => {
+                buildingType.value = 'hangar';
+                region.value = 'central';
+                width.value = '12';
+                length.value = '24';
+                height.value = '6';
+                options.value = 'standard';
+                updatePrice();
+            });
+            requestBtn.addEventListener('click', () => {
+                const price = calculatePrice();
+                if (price > 0) {
+                    alert(`✅ Спасибо за интерес!\n\nВаша заявка отправлена.\nСтоимость: ${price.toLocaleString('ru-RU')} ₽.\nВ ближайшее время с вами свяжется инженер.`);
+                } else {
+                    alert('⚠️ Пожалуйста, заполните все размеры для расчета.');
+                }
+            });
+            [buildingType, region, width, length, height, options].forEach(inp => {
+                inp.addEventListener('change', updatePrice);
+                if (inp.tagName === 'INPUT') inp.addEventListener('input', updatePrice);
+            });
+            updatePrice();
+
+            // ---------- ФОРМА КОНТАКТОВ ----------
+            document.getElementById('contactForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('✅ Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.');
+                this.reset();
+            });
+
+            // ---------- ПЛАВНЫЙ СКРОЛЛ ----------
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') return;
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // ---------- АНИМАЦИЯ ПОЯВЛЕНИЯ (REVEAL) ----------
+            const revealElements = document.querySelectorAll('.service-card, .benefit-item, .portfolio-item, .review-card');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.2 });
+            revealElements.forEach(el => {
+                el.classList.add('reveal');
+                revealObserver.observe(el);
+            });
+
+        })();
+    </script>
 </body>
 </html>
